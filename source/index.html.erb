@@ -4,13 +4,33 @@ nav_order: 10
 ---
 
 <section>
-<h2>What's this?</h2>
-<p>Octoparts is an API request aggregation service. It works as a middleware between your frontend and backend services, taking care of request parallelization, response caching, fault tolerance and performance visualization.</p>
-<p>Octoparts is implemented in Scala, making heavy use of the <a href="https://github.com/Netflix/Hystrix">Hystrix</a> library.</p>
+  <h2>What's this?</h2>
+
+  <p>Octoparts is an API request aggregation service. It works as a middleware between your frontend and backend services, taking care of request parallelization, response caching, fault tolerance and performance visualization.</p>
+
+  <p>Octoparts is implemented in Scala, making heavy use of the <%= link_to "Hystrix", "https://github.com/Netflix/Hystrix" %> library.</p>
+
 </section>
 
-<p>TODO screenshots</p>
+<section>
+  <h3>Summarised feature list</h3>
+    <ul>
+      <li>Stateless architecture for simple scaling</li>
+      <li>Parallelization of API requests</li>
+      <li>Tolerance against backend failure</li>
+      <li>Powerful and flexible caching</li>
+      <li>RESTful API documented with <%= link_to "Swagger", "http://swagger.wordnik.com/" %></li>
+      <li>Fully-featured administration section for managing caching, parameters, and alert settings for your backend services</li>
+      <li><%= link_to "Kibana", "http://www.elasticsearch.org/overview/kibana/" %> visualisation for your backend service performance metrics</li>
+    </ul>
+</section>
 
-<p>TODO feature list</p>
+<section>
+  <h3>Screenshots</h3>
+  <ul>
+    <li><%= tag :img, :src => "/img/kibana_dashboard.png" %></li>
+    <li><%= tag :img, :src => "/img/hystrix_dashboard.png" %></li>
+  </ul>
+</section>
 
 <p>TODO getting started guide (or a link to the getting started guide)</p>
