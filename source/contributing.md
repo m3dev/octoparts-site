@@ -9,7 +9,7 @@ nav_order: 100
 
 If you wish to report an issue for Octoparts, please ensure you have done the following things:
 
-* If it is a documentation issue with a simple fix, don't raise an issue, just edit the documentation yourself directly in GitHub and submit a pull request.
+* If it is a documentation issue with a simple fix, don't raise an issue, just edit the documentation yourself directly in GitHub and submit a pull request. *Note* the documentation repository is [https://github.com/m3dev/octoparts-site](https://github.com/m3dev/octoparts-site)
 * If you have a feature request, please raise an issue in the Github Issues tracker first.  It may be that Octoparts already provides something to achieve what you want to achieve, and raising an issue first allows us to catch that before you waste your time implementing something.
 * If you think you have found a bug, please raise an issue.  Please be as specific as possible, including sample code that reproduces the problem, stack traces if there are any exceptions thrown, and versions of Octoparts, OS, JVM, etc.
 
@@ -35,8 +35,8 @@ This is the process for a contributor to contribute to Octoparts.
         * Introducing new, heavy external dependencies
 3. Submit a pull request.
 
-If the pull request does not meet the above requirements then it might be a long while before it makes its way into the main code base.
+If the pull request does not meet the above requirements, then it will be rejected until it does.
 
 ## Licence
 
-By contributing your code, you agree to license your contributionunder the terms of the [Apache Licence v2](http://www.apache.org/licenses/LICENSE-2.0.html)
+By contributing your code, you agree to license your contribution under the terms of the [Apache Licence v2](http://www.apache.org/licenses/LICENSE-2.0.html)
