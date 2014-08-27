@@ -3,4 +3,109 @@ title: Getting started
 nav_order: 10
 ---
 
-<p>TODO is this page needed? Just put a Getting Started guide on top page?</p>
+## Get Octoparts
+
+Simply clone the GitHub repository.
+
+```
+git clone git@github.com:m3dev/octoparts.git
+```
+
+## Configure for your development environment
+
+By default Octoparts is setup to use Environment variables for much of its configuration. This is kind of annoying when running it on your development machine, so we recommend you create an `application.dev.conf` file where you can override some settings.
+
+We provide a sample file at `/conf/application.dev.conf.sample`, so use that as a guide.
+
+```
+cd octoparts/conf
+cp application.dev.conf.sample application.dev.conf
+```
+
+## Run Octoparts on your local machine
+
+### Using Vagrant
+
+The simplest way to set up a development environment for Octoparts is to use Vagrant. A Vagrantfile is included in the Git repository.
+
+We assume that you have the following installed already:
+
+1. [Virtualbox](https://www.virtualbox.org)
+2. [Vagrant](http://www.vagrantup.com/)
+3. [Ansible](http://www.ansible.com/get-started)
+
+Note that the directory holding the Vagrant file is called `vaygrant` (with a 'y'). This is a matter of personal choice, not a typo! :)
+
+```
+cd octoparts/vaygrant
+vagrant up
+```
+
+This will set up a virtual machine and use a set of Ansible playbooks to perform the following provisioning:
+
+* Install Java 8
+* Install Postgresql and set up a DB for Octoparts
+* Install Tomcat (for the Hystrix dashboard)
+* Install memcached
+* Install fluentd (to forward logs from Octoparts to Elasticsearch)
+* Install Elasticsearch (to store the logs for display on Kibana)
+* Install nginx and Kibana (to display dashboards)
+
+The first time you run this, it will have to download the world, so it will take a long time. Go away and make a cup of coffee.
+
+Once provisioning is complete, SSH into the machine.
+
+```
+vagrant ssh
+```
+
+The Octoparts folder is mounted at `/parts`, so `cd` to there and start the Play server.
+
+```
+cd /parts
+./sbt run
+```
+
+Again, the first time this runs, it will take a long time to download dependencies.
+
+Once the server starts, open your browser and access <%= link_to 'http://localhost:9000/admin', 'http://localhost:9000/admin', :target => '_blank' %>. If all has gone well, you should see the Octoparts admin UI.
+
+### By hand
+
+If you don't want to use Vagrant, setting up a minimal environment by hand is pretty simple.
+
+#### Postgresql
+
+Assuming you already have Postgresl installed and running, create a Postgresql DB and user.
+
+```
+createuser -DRS octoparts_app
+createdb -EUTF-8 -Ooctoparts_app octoparts
+```
+
+Don't forget to update `/conf/application.dev.conf` to match whatever DB password you set.
+
+#### Memcached (optional)
+
+If you want to use Memcached, just make sure it is running and then update your configuration file to tell Octoparts to use it.
+
+```
+caching {
+  inmemory = false
+}
+memcached {
+  host = "localhost:11211"
+}
+```
+
+#### Start the server
+
+```
+cd octoparts
+./sbt run
+```
+
+The first time this runs, it will take a long time to download dependencies.
+
+Once the server starts, open your browser and access <%= link_to 'http://localhost:9000/admin', 'http://localhost:9000/admin', :target => '_blank' %>. If all has gone well, you should see the Octoparts admin UI.
+
