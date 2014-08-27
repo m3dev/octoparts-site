@@ -1,0 +1,19 @@
+box: wercker/rvm
+
+build:
+    steps:
+        - rvm-use:
+            version: 2.1.2
+
+        - bundle-install
+
+        - script:
+            name: build with middleman
+            code: bundle exec middleman build --verbose
+
+deploy:
+    steps:
+        - lukevivier/gh-pages:
+            token: $GITHUB_TOKEN
+            basedir: ./build
+            repo: m3dev/octoparts-site
