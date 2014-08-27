@@ -35,7 +35,7 @@
             
             <ul class="nav nav-pills nav-stacked">
             <% sitemap.where(:nav_order.gte => 0).order_by(:nav_order).all.each { |page| %>
-              <li <%= "class='active'" if page.data.title == current_page.data.title %>><a href="<%= page.url %>"><%= page.data.title %></a></li>
+              <li <%= "class='active'" if page.data.title == current_page.data.title %>><%= link_to page.data.title, page.url %></a></li>
             <% } %>
             </ul>
           </div>
