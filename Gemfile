@@ -15,3 +15,8 @@ gem "tzinfo-data", platforms: [:mswin, :mingw]
 
 # To deploy to gh-pages
 gem "middleman-deploy", "~> 0.3.0"
+
+# Syntax highlighting
+gem "redcarpet"
+gem "middleman-syntax", "~> 2.0.0"
+gem "rouge", "~> 1.6.2"

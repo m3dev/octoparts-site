@@ -48,10 +48,15 @@ end
 # end
 
 set :css_dir, 'css'
-
 set :js_dir, 'js'
-
 set :images_dir, 'img'
+
+# Enable syntax highlighting
+activate :syntax
+
+# Enable GitHub-style code blocks in markdown files
+set :markdown_engine, :redcarpet
+set :markdown, :fenced_code_blocks => true, :smartypants => true
 
 # Build-specific configuration
 configure :build do
