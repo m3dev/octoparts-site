@@ -28,9 +28,9 @@
       <div class="row">
 
         <div class="col-md-3">
-          <div class="sidebar">
+          <div id="sidebar" style="padding-top: 20px;">
             <% link_to '/index.html' do %>
-              <h4>TODO Octoparts logo here</h4>
+                <%= image_tag 'octo_logo1.png', :width => '220px', :style => 'padding-left: 15px;' %>
             <% end %>
             
             <ul class="nav nav-pills nav-stacked">
@@ -42,7 +42,7 @@
         </div>
 
         <div class="col-md-9">
-          <h1><%= current_page.data.title || "Octoparts" %></h1>
+          <h1><%= current_page.data.title || "" %></h1>
           <%= yield %>
         </div>
 

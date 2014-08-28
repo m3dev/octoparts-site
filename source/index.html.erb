@@ -1,35 +1,39 @@
 ---
-title: Octoparts
+title: 
 ---
 
-<section>
-  <h2>What's this?</h2>
+<%= image_tag 'octo_logo2.png', :width => '350px' %>
 
-  <p>Octoparts is an API request aggregation service. It works as a middleware between your frontend and backend services, taking care of request parallelization, response caching, fault tolerance and performance visualization.</p>
+<h3>What's this?</h3>
 
-  <p>Octoparts is implemented in Scala, making heavy use of the <%= link_to "Hystrix", "https://github.com/Netflix/Hystrix" %> library.</p>
+<p>Octoparts is an API request aggregation service. It works as a middleware between your frontend and backend services, taking care of request parallelization, response caching, fault tolerance and performance visualization.</p>
 
-</section>
+<p>Octoparts is implemented in Scala, making heavy use of the <%= link_to "Hystrix", "https://github.com/Netflix/Hystrix" %> library.</p>
 
-<section>
-  <h3>Summarised feature list</h3>
-    <ul>
-      <li>Stateless architecture for simple scaling</li>
-      <li>Parallelization of API requests</li>
-      <li>Tolerance against backend failure</li>
-      <li>Powerful and flexible caching</li>
-      <li>RESTful API documented with <%= link_to "Swagger", "http://swagger.wordnik.com/" %></li>
-      <li>Fully-featured administration section for managing caching, parameters, and alert settings for your backend services</li>
-      <li><%= link_to "Kibana", "http://www.elasticsearch.org/overview/kibana/" %> visualisation for your backend service performance metrics</li>
-    </ul>
-</section>
+<h3>Summarised feature list</h3>
+<ul>
+  <li>Stateless architecture for simple scaling</li>
+  <li>Parallelization of API requests</li>
+  <li>Tolerance against backend failure</li>
+  <li>Powerful and flexible caching</li>
+  <li>RESTful API documented with <%= link_to "Swagger", "http://swagger.wordnik.com/" %></li>
+  <li>Fully-featured administration section for managing caching, parameters, and alert settings for your backend services</li>
+  <li><%= link_to "Kibana", "http://www.elasticsearch.org/overview/kibana/" %> visualisation for your backend service performance metrics</li>
+</ul>
 
-<section>
-  <h3>Screenshots</h3>
-  <ul>
-    <li><%= image_tag "kibana_dashboard.png" %></li>
-    <li><%= image_tag "hystrix_dashboard.png" %></li>
-  </ul>
-</section>
+<h3>Screenshots <small>(Click to enlarge)</small></h3>
 
-<p>TODO getting started guide (or a link to the getting started guide)</p>
+<div class="screenshot">
+  <% link_to '/img/kibana_dashboard.png', :target => "_blank" do %>
+    <%= image_tag "kibana_dashboard.png", :width => '500px' %>
+  <% end %>
+</div>
+
+<div class="screenshot">
+  <% link_to '/img/hystrix_dashboard.png', :target => "_blank" do %>
+    <%= image_tag "hystrix_dashboard.png", :width => '500px' %>
+  <% end %>
+</div>
+
+<h3>Getting started</h3>
+<p>To try Octoparts for yourself, checkout the <%= link_to 'Getting Started', '/getting-started.html' %> guide.</p>
