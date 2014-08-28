@@ -41,11 +41,21 @@ configure :development do
 end
 
 # Methods defined in the helpers block are available in templates
-# helpers do
-#   def some_helper
-#     "Helping"
-#   end
-# end
+helpers do
+
+  # Insert a Bootstrap panel with a 'Note' header
+  def note(&block)
+    concat_content(
+      "<div class='panel panel-default'>" +
+        "<div class='panel-heading'>Note</div>" +
+        "<div class='panel-body'>" + 
+          capture_html(&block) + 
+        "</div>" +
+      "</div>"
+    )
+  end
+
+end
 
 set :css_dir, 'css'
 set :js_dir, 'js'
