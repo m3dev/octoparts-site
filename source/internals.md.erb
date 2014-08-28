@@ -3,4 +3,15 @@ title: Internals
 nav_order: 80
 ---
 
-<p>TODO explain about caching (copy and translate from wiki)</p>
+## Moving pieces
+
+Octoparts is composed of the following components:
+
+- Web app built on the [Playframework](https://www.playframework.com/)
+  - Wraps calls to registered endpoints in [Hystrix](https://github.com/Netflix/Hystrix) [commands](http://netflix.github.io/Hystrix/javadoc/index.html?com/netflix/hystrix/HystrixCommand.html) to guarantee resilience and responsiveness
+  - Caches endpoint configuration metadata and endpoint results to either EhCached or Memcached
+- [Hystrix dashboard](https://github.com/Netflix/Hystrix/tree/master/hystrix-dashboard) for Hystrix stream visualisation, deployed in Tomcat
+  - If multiple Octoparts nodes are used, [Turbine](https://github.com/Netflix/Turbine/wiki/Getting-Started) is required for aggregating the Hystrix streams into a single stream to be consumed by the dashboard
+- [Kibana](http://www.elasticsearch.org/overview/kibana/) for visualising log entry data
+  - Log data from each Octoparts node is collected and aggregated via [fluentd](http://www.fluentd.org/) and stored in [ElasticSearch](http://www.elasticsearch.org/)
+- [Alert Mailer](../alert-mails.html) that queries the aforementioned ElasticSearch datastore to monitor errors rates and, if errors surpass configured thresholds, sends alert emails
