@@ -31,17 +31,19 @@ The version information is also stored in Memcached so that it can be shared acr
 
 Sometimes, when one piece of data changes, you want to invalidate a number of cached API responses in one go. For example, if a user of your site gains an activity point for performing some action, you may want to invalidate all data that was generated based on the user's out-of-date activity point count.
 
-Octoparts provides support for this with the concept of cache groups. Every API endpoint can be a member of one or more cache groups. One call to the Octoparts cache invalidation API will flush the cache for all members of the given group.
+Octoparts provides support for this with the concept of cache groups. Every API endpoint or parameter can be a member of one or more cache groups. One call to the Octoparts cache invalidation API will flush the cache for all members of the given group.
 
-For example, say we have three API endpoints, all of which are members of the `userActivityPoints` cache group:
+For example, say we have three API endpoints that take `userId` parameters:
 
-* `getUserProfile`
-* `getUserActivityPointCount`
-* `getUserPremiumStatus`
+* `getUserProfile(userId)`
+* `getUserActivityPointCount(userId)`
+* `getUserPremiumStatus(userId)`
+
+Assume that each of these `userId` parameters has been registered with the `userActivityPoints` cache group.
 
 When user 123's activity point count changes, just make one request to 
 
-    /cache/invalidate/cacheGroup/userActivityPoints/userId/123
+    /cache/invalidate/cacheGroup/userActivityPoints/params/123
 
 Cached data from all three APIs relating to that user will be invalidated.
 
