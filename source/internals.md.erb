@@ -3,7 +3,7 @@ title: Internals
 nav_order: 80
 ---
 
-## Moving pieces
+### Moving pieces
 
 Octoparts is composed of the following components:
 
@@ -15,3 +15,25 @@ Octoparts is composed of the following components:
 - [Kibana](http://www.elasticsearch.org/overview/kibana/) for visualising log entry data
   - Log data from each Octoparts node is collected and aggregated via [fluentd](http://www.fluentd.org/) and stored in [ElasticSearch](http://www.elasticsearch.org/)
 - [Alert Mailer](../alert-mails.html) that queries the aforementioned ElasticSearch datastore to monitor errors rates and, if errors surpass configured thresholds, sends alert emails
+
+### Process flow
+
+<div class="screenshot">
+  <% link_to '/img/req_resp_flow.png', :target => "_blank" do %>
+    <%= image_tag "req_resp_flow.png", :width => '500px', :alt => "Request to response process flow diagram" %>
+  <% end %>
+</div>
+
+When a POST request is sent to the [endpoints invocation API](http://localhost:9000/swagger-ui/#!/1/Dependencies_invocation) (TODO: point to deployed Octoparts swagger), it goes through the following process:
+
+0. The request body is parsed into a JSON object.
+1. The JSON object is deserialised into an `AggregateRequest` object.
+2. The `AggregateRequest` is processed:
+  1. The `RequestMeta` for the request is extracted to identify common shareable data and to ensure we process the request within the requested timeout duration.
+  2. The `PartRequest`s contained inside are processed asynchronously in parallel:
+      0. Find the configured endpoint data (HTTP address to hit, parameters, cache) that matches the partId of the `PartRequest`. If none can be found, return an error for this particular `PartRequest` explaining that the partId provided is not supported.
+      1. If there is a suitable cached `PartResponse` for the `PartRequest` (i.e. one that matches all the parameters and is not stale according to the corresponding endpoint configuration; see [Caching](../caching.html) for more details), return it.
+      2. If there isn't a suitable cached response, wrap an HTTP request to the backend endpoint in a Hystrix Command with the proper thread pool and invoke it. Using the response from the command, generate and cache a PartResponse.
+3. All the `PartResponse`s are gathered into a single `AggregateResponse` object. *Note:* `PartRequest`s that take longer than the default or requested timeout duration to process are mapped to a `PartResponse` with a timeout error (for more details, see [Timeouts](../timeouts.html))
+4. The `AggregateResponse` is serialised into a JSON object
+5. The JSON object is sent as a string in the body of the HTTP response
