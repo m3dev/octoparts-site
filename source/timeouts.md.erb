@@ -3,4 +3,35 @@ title: Timeouts
 nav_order: 60
 ---
 
-<p>TODO explain about caching (copy and translate from wiki)</p>
+## Timeout types
+
+In Octoparts, there are 2 types of timeouts:
+
+1. `HystrixCommand` timeout, which allows Octoparts to fail fast and shed load in an isolated manner for each registered endpoint.
+2. Request timeout, which allows Octoparts (and subsequently the service that invokes Octoparts) to guarantee responsiveness.
+
+### Hystrix timeout
+
+#### Octoparts and Hystrix
+
+Octoparts wraps all requests to registered backend endpoints in a [`HystrixCommand`](https://netflix.github.io/Hystrix/javadoc/index.html?com/netflix/hystrix/HystrixCommand.html) object, which is a construct used to run a block of (usually blocking) code and return the result asynchronously in a resilient and responsive fashion (to learn more about Hystrix and all the benefits of using it, read the [Hystrix wiki](https://github.com/Netflix/Hystrix/wiki)).
+
+Part of the constructor arguments of a `HystrixCommand` is a timeout value in milliseconds, which defines how long the block of code inside the command has to finish processing.
+
+#### HystrixCommand processing
+
+Once a `HystrixCommand` is instantiated with our backend endpoint call as the block of code to be run, we invoke the command, getting back an asynchronous`Future` result.
+
+*However*, in the Hystrix world, the command is executed synchronously (using a thread from another threadpool). If the command takes longer than the timeout duration to finish, Hystrix will cause the `Future` return value to be a `TimeoutException` and returns the thread back to the threadpool.
+
+### Request timeout
+
+Octoparts allows you to specify, on a per `AggregateRequest` level, the maximum duration you want the server to "wait" before replying with an `AggregateResponse`. This is done by specifying a value in the optional `timeoutMs` field in the `requestMeta` field of an `AggregateResponse`. *However*, by default, there is 5 second value specified for `maximumAggReqTimeout`, and the lower value between what is specified in `timeoutMs` and `maximumAggReqTimeout` is used as the timeout duration for a given request.
+
+During the processing of an `AggregateRequest`, each `PartRequest` is processed asynchronously in parallel (as specified in [Internals](../internals.html)), and those that don't complete within the aforementioned timeout duration are completed using a TimedoutException (those that finish processing within the duration are left alone).
+
+Those familiar with Scala may want to checkout our `RichFutureWithTimeout` enrichment to see how this is done without blocking our request thread.
+
+## Motivation for having 2 types of timeouts
+
+Asides from the two types serving 2 different functional requirements, the separation our timeouts allow us to do something cool: even if a request timeout has occured for a given `PartRequest`, so long as the corresponding `HystrixCommand` hasn't timed out, we can cache the eventual result of the `HystrixCommand` so that the next time the same `PartRequest` is processed by Octoparts, we have a chance of getting a cache hit, which allows us to respond immediately. For more details, see [Caching](../caching.html)
