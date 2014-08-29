@@ -3,4 +3,83 @@ title: Caching
 nav_order: 50
 ---
 
-TODO explain about caching (copy and translate from wiki)
+Octoparts caches the following information in [Memcached](http://memcached.org/):
+
+* Responses from API calls
+* The configuration data that is stored in the DB
+
+### Versioning
+
+In order to provide powerful support for cache invalidation, Octoparts maintains version information at the level of
+
+* individual API endpoints (e.g. the `getUserProfile` endpoint)
+* particular values of parameters for a given endpoint (e.g. 'get me the user profile where userId = 123')
+
+This allows us to invalidate cached data at two different scopes.
+
+1. By increasing the version of the `getUserProfile` part, any API responses cached with the previous version will be invalidated.
+
+2. By increasing the version of the `(partId = getUserProfile, userId = 123)` tuple, we can invalidate any cached versions of that endpoint's response for that particular user.
+
+<% note do %>
+  When we invalidate a cached value, we never actually remove it from the cache. We rely on Memcached's LRU behaviour to eventually discard unneeded data.
+<% end %>
+
+The version information is also stored in Memcached so that it can be shared across all Octoparts instances, in order to improve the cache hit rate. It is also cached in-memory on each instance for performance reasons.
+
+### Cache groups
+
+Sometimes, when one piece of data changes, you want to invalidate a number of cached API responses in one go. For example, if a user of your site gains an activity point for performing some action, you may want to invalidate all data that was generated based on the user's out-of-date activity point count.
+
+Octoparts provides support for this with the concept of cache groups. Every API endpoint or parameter can be a member of one or more cache groups. One call to the Octoparts cache invalidation API will flush the cache for all members of the given group.
+
+For example, say we have three API endpoints that take `userId` parameters:
+
+* `getUserProfile(userId)`
+* `getUserActivityPointCount(userId)`
+* `getUserPremiumStatus(userId)`
+
+Assume that each of these `userId` parameters has been registered with the `userActivityPoints` cache group.
+
+When user 123's activity point count changes, just make one request to 
+
+    /cache/invalidate/cacheGroup/userActivityPoints/params/123
+
+Cached data from all three APIs relating to that user will be invalidated.
+
+### Cache headers
+
+Octoparts supports a number of cache-related HTTP headers when communicating both with clients (i.e. frontends) and with backend APIS.
+
+#### Clients
+
+* `Cache-Control: no-cache`
+
+If the client sets this header when performing an aggregate request, Octoparts will guarantee not to return any API responses that were retrieved from the cache.
+
+#### Backend APIs
+
+* `Cache-Control: no-cache`
+
+If this header is set on an API response, Octoparts will guarantee not to insert the response into the cache. Note, however, that if the response already happens to be present in the cache, Octoparts will not remove it.
+
+* `Cache-Control: max-age=3600`
+
+If `max-age` is set, Octoparts will cache the response with the given TTL (in seconds). However, if a TTL is also set in the admin screen for that endpoint, the shorter of the two TTLs will be used.
+
+* `ETag`, `Last-Modified`
+
+If one or more of these headers are set, Octoparts will store their values together with the response itself in the cache. It will cache the response indefinitely, even if it is supposed to have a TTL.
+
+The next time Octoparts looks up the response in the cache, <strong>only</strong> if the cached response has exceeded its TTL, it will contact the backend API again in order to validate that the cached response is not stale. It will send `If-None-Match` and/or `If-Modified-Since` headers. 
+
+If the backend responds with a `304 Not Modified`, Octoparts will return the cached response to the client. Otherwise it will cache the new response and return it to the client.
+
+
+### Internals
+
+This flowchart shows the gory details of how Octoparts looks up an API response in the cache.
+
+  <% link_to '/img/cache-lookup-sequence.png', :target => "_blank" do %>
+    <%= image_tag "cache-lookup-sequence.png", :width => '500px' %>
+  <% end %>

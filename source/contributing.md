@@ -3,9 +3,9 @@ title: Contributing
 nav_order: 100
 ---
 
-# Octoparts Contributor Guidelines
+## Octoparts Contributor Guidelines
 
-## Reporting Issues
+### Reporting Issues
 
 If you wish to report an issue for Octoparts, please ensure you have done the following things:
 
@@ -13,7 +13,7 @@ If you wish to report an issue for Octoparts, please ensure you have done the fo
 * If you have a feature request, please raise an issue in the Github Issues tracker first.  It may be that Octoparts already provides something to achieve what you want to achieve, and raising an issue first allows us to catch that before you waste your time implementing something.
 * If you think you have found a bug, please raise an issue.  Please be as specific as possible, including sample code that reproduces the problem, stack traces if there are any exceptions thrown, and versions of Octoparts, OS, JVM, etc.
 
-## Contributor Workflow
+### Contributor Workflow
 
 This is the process for a contributor to contribute to Octoparts.
 
@@ -37,6 +37,6 @@ This is the process for a contributor to contribute to Octoparts.
 
 If the pull request does not meet the above requirements, then it will be rejected until it does.
 
-## Licence
+### Licence
 
 By contributing your code, you agree to license your contribution under the terms of the [Apache Licence v2](http://www.apache.org/licenses/LICENSE-2.0.html)
