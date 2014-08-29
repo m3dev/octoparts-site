@@ -3,3 +3,115 @@ title: Logging & Visualization
 nav_order: 70
 ---
 
+## Pretty graphs
+
+Asides from performance and resilience benefits, routing backend services through Octoparts gives you the benefit of effortlessly* having the metrics for all of them in one place. Visualisations are available in [Kibana](http://www.elasticsearch.org/overview/kibana/) and/or [Hystrix dashboard](https://github.com/Netflix/Hystrix/tree/master/hystrix-dashboard).
+
+*Some assembly is required.
+
+## Kibana
+
+<div class="screenshot">
+  <% link_to '/img/kibana_dashboard.png', :target => "_blank" do %>
+    <%= image_tag "kibana_dashboard.png", :width => '500px' %>
+  <% end %>
+</div>
+
+Octoparts is configured to log metadata for all backend endpoint requests. This includes when a request occured, endpoint id, cache hit or miss, and response time. It also logs Hystrix statuses for the endpoint separately, showing whether the circuit was open or closed, error counts, and average execution time.
+
+This data is logged in LTSV format and we will use Fluentd to help us get the data from our Octoparts nodes to Elasticsearch so it is accessible from Kibana.
+
+### 1. Set up Fluentd on each Octoparts node
+
+If you already know how to set up Fluentd, feel free to do it Your Way.
+
+1. Install the `td-agent` package
+2. Install the `libcurl-devel` package
+3. Install the `fluent-plugin-elasticsearch` gem: `$ fluent-gem install fluent-plugin-elasticsearch` **Note:** this is `fluent-gem install` _not_ `gem install`
+4. Create a temp log directory at `/etc/td-agent/tmp`
+5. Add a config Fluentd config file at `/etc/td-agent/td-agent.conf` with the following contents
+
+  ```
+  ## You will want to substitute your actual Octoparts log directory, Elasticsearch host, and
+  ## Elasticsearch host port in the appropriate placeholders below.
+
+  ####
+  ## Output descriptions:
+  ##
+
+  ## match tag=debug.** and dump to console
+  <match debug.**>
+    type stdout
+  </match>
+
+  ####
+  ## Source descriptions:
+  ##
+
+  <source>
+    type tail
+    format ltsv
+    path {{ octoparts_log_dir }}/hystrix-metrics.log
+    pos_file /etc/td-agent/tmp/hystrix-metrics.pos
+    tag octoparts.hystrix
+    time_key time
+  </source>
+
+  <source>
+    type tail
+    format ltsv
+    path {{ octoparts_log_dir }}/part-requests.log
+    pos_file /etc/td-agent/tmp/part-requests.pos
+    tag octoparts.partrequests
+    time_key time
+  </source>
+
+  <match octoparts.hystrix>
+    type elasticsearch
+    host {{ elasticsearch_host }}
+    port {{ elasticsearch_port }}
+    type_name metrics
+    logstash_format true
+    logstash_prefix octoparts_hystrix
+    flush_interval 5s
+    utc_index false # Convert UTC timestamps to Japanese timezone
+  </match>
+
+  <match octoparts.partrequests>
+    type elasticsearch
+    host {{ elasticsearch_host }}
+    port {{ elasticsearch_port }}
+    type_name partrequests
+    logstash_format true
+    logstash_prefix octoparts_partrequests
+    flush_interval 5s
+    utc_index false # Convert UTC timestamps to Japanese timezone
+  </match>
+  ```
+6. Make sure the td-agent service is running (e.g.`service td-agent start`)
+
+### 2. Install Elasticsearch
+
+You can install Elasticsearch using your distro's package manager or [the Elasticsearch official way](http://www.elasticsearch.org/overview/elkdownloads/). Just make sure it's running before proceeding.
+
+### 3. Install Kibana
+
+The [official instructions](https://github.com/elasticsearch/kibana#installation) are fairly straightforward and easy to follow. After you've gone through them, you should have a working Kibana deployment that can query your Octoparts log data stored in Elasticsearch and show nice pretty graphs.
+
+## Hystrix dashboard
+
+<div class="screenshot">
+  <% link_to '/img/hystrix_dashboard.png', :target => "_blank" do %>
+    <%= image_tag "hystrix_dashboard.png", :width => '500px' %>
+  <% end %>
+</div>
+
+To visualise the real-time Hystrix data stream, we recommend using the [Hystrix dashboard](https://github.com/Netflix/Hystrix/tree/master/hystrix-dashboard) made by the Netflix team. The installation, which consists of installing Tomcat and deploying their prepackaged WAR file, is fairly simple and can be found [on their Github wiki](https://github.com/Netflix/Hystrix/wiki/Dashboard#installation-of-dashboard)
+
+Once the dashboard has been deployed, open a browser and go to where you've deployed it. At the Hystrix Dashboard greeting splash page, input your Octoparts web app address followed by `/hystrix.stream` (e.g. "http://octoparts/hystrix.stream") into the top-most box and hit the "Monitor Stream" button. The next page will be blank until one of your endpoints is invoked.
+
+### Octoparts cluster
+
+If you have a cluster of Octoparts web apps running, you will need to aggregate the data streams from all your Octoparts nodes and feed an aggregated data stream to the Hystrix dashboard. Fortunately, [Turbine](https://github.com/Netflix/Turbine) (also made by Netflix) does exactly this.
+
+The installation instructions for Turbine are located on their [wiki](https://github.com/Netflix/Turbine/wiki/Getting-Started#get-turbine-installed), so we won't repeat them here. We will say though, that we had no problems installing the Turbine WAR in the same Tomcat container installation as the Hystrix dashboard mentioned above.
