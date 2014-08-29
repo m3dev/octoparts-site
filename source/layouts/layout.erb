@@ -32,7 +32,7 @@
             <% link_to '/index.html' do %>
                 <%= image_tag 'octo_logo1.png', :width => '220px', :style => 'padding-left: 15px;' %>
             <% end %>
-            
+
             <ul class="nav nav-pills nav-stacked">
             <% sitemap.where(:nav_order.gte => 0).order_by(:nav_order).all.each { |page| %>
               <li <%= "class='active'" if page.data.title == current_page.data.title %>><%= link_to page.data.title, page.url %></a></li>
@@ -48,6 +48,28 @@
 
       </div>
     </div>
+
+    <footer class="site-footer">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <h4>Made by M3</h4>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <ul class="list-inline">
+                <li>
+                  <%= link_to "M3Dev", "http://m3dev.github.io/"  %>
+                </li>
+                <li>
+                  <%= link_to "We're hiring!", "http://at.m3.com/job" %>
+                </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.8.0.min.js"><\/script>')</script>
