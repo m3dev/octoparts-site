@@ -3,7 +3,7 @@ title: HTTP API
 nav_order: 40
 ---
 
-The REST API of Octoparts is relatively small. Those already familiar with <%= link_to "Swagger", "http://swagger.wordnik.com/" %> can simply head to the built-in Swagger documentation, which is hosted at <%= link_to "http://octoparts.herokuapp.com/swagger-ui", "octoparts.herokuapp.com/swagger-ui" %>(not up as of writing).
+The REST API of Octoparts is relatively small. Those already familiar with <%= link_to "Swagger", "http://swagger.wordnik.com/" %> can simply head to the built-in Swagger documentation, which is hosted at <%= link_to "octoparts.herokuapp.com/swagger-ui", "http://octoparts.herokuapp.com/swagger-ui" %>.
 
 ## Basic overview
 
@@ -48,7 +48,7 @@ You can choose to ignore the AggregateResponse, but it contains useful informati
 
 ### Cache invalidation endpoints
 
-The cache invalidation endpoints allow you to invalidate the cached responses stored in Octoparts.  The endpoints allow you to invalidate caches by dependency name, dependency name with parameter name-value pair, cache group name, and cache group name with parameter value. 
+The cache invalidation endpoints allow you to invalidate the cached responses stored in Octoparts.  The endpoints allow you to invalidate caches by dependency name, dependency name with parameter name-value pair, cache group name, and cache group name with parameter value.
 
 For information on what this means in detail, see <%= link_to "Caching page", "/caching.html" %>
 
