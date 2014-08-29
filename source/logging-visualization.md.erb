@@ -19,7 +19,7 @@ Asides from performance and resilience benefits, routing backend services throug
 
 Octoparts is configured to log metadata for all backend endpoint requests. This includes when a request occured, endpoint id, cache hit or miss, and response time. It also logs Hystrix statuses for the endpoint separately, showing whether the circuit was open or closed, error counts, and average execution time.
 
-This data is logged in LTSV format and we will use Fluentd to help us get the data from our Octoparts nodes to ElasticSearch so it is accessible from Kibana.
+This data is logged in LTSV format and we will use Fluentd to help us get the data from our Octoparts nodes to Elasticsearch so it is accessible from Kibana.
 
 ### 1. Set up Fluentd on each Octoparts node
 
@@ -32,8 +32,8 @@ If you already know how to set up Fluentd, feel free to do it Your Way.
 5. Add a config Fluentd config file at `/etc/td-agent/td-agent.conf` with the following contents
 
   ```
-  ## You will want to substitute your actual Octoparts log directory, ElasticSearch host, and
-  ## ElasticSearch host port in the appropriate placeholders below.
+  ## You will want to substitute your actual Octoparts log directory, Elasticsearch host, and
+  ## Elasticsearch host port in the appropriate placeholders below.
 
   ####
   ## Output descriptions:
@@ -90,13 +90,13 @@ If you already know how to set up Fluentd, feel free to do it Your Way.
   ```
 6. Make sure the td-agent service is running (e.g.`service td-agent start`)
 
-### 2. Install ElasticSearch
+### 2. Install Elasticsearch
 
-You can install ElasticSearch using your distro's package manager or [the ElasticSearch official way](http://www.elasticsearch.org/overview/elkdownloads/). Just make sure it's running before proceeding.
+You can install Elasticsearch using your distro's package manager or [the Elasticsearch official way](http://www.elasticsearch.org/overview/elkdownloads/). Just make sure it's running before proceeding.
 
 ### 3. Install Kibana
 
-The [official instructions](https://github.com/elasticsearch/kibana#installation) are fairly straightforward and easy to follow. After you've gone through them, you should have a working Kibana deployment that can query your Octoparts log data stored in ElasticSearch and show nice pretty graphs.
+The [official instructions](https://github.com/elasticsearch/kibana#installation) are fairly straightforward and easy to follow. After you've gone through them, you should have a working Kibana deployment that can query your Octoparts log data stored in Elasticsearch and show nice pretty graphs.
 
 ## Hystrix dashboard
 
