@@ -109,3 +109,67 @@ The first time this runs, it will take a long time to download dependencies.
 
 Once the server starts, open your browser and access <%= link_to 'http://localhost:9000/admin', 'http://localhost:9000/admin', :target => '_blank' %>. If all has gone well, you should see the Octoparts admin UI.
 
+## Register your first endpoint
+
+Let's register an endpoint using the admin UI. For our sample endpoint we'll use [http://jsontest.com](jsontest.com)'s JSON echo API.
+
+First we need to create a thread pool. This pool will be used to execute all HTTP requests to our endpoint.
+
+Click 'Thread pools' in the navbar, then click the 'Create a new thread pool' button. Give your thread pool a name and press 'Submit'.
+
+Next, click 'Create a new part' in the navbar and fill in the form as shown in the screenshot below. (Any fields not shown in the screenshot can be left blank.)
+
+<div class="screenshot">
+  <% link_to '/img/create_new_part.png', :target => "_blank" do %>
+      <%= image_tag 'create_new_part.png', :width => '500px' %>
+  <% end %>
+</div>
+
+Note the endpoint's URL: `http://echo.jsontest.com/foo/${fooValue}`. The `${fooValue}` is a placeholder that can be substituted with a client-supplied value when the endpoint is called.
+
+Now we'll register a parameter so that we can dynamically change the value of this placeholder.
+
+On the endpoint's detail page, click the `Create a new parameter` button and fill in the form as shown in the following screenshot.
+
+<div class="screenshot">
+  <% link_to '/img/create_new_param.png', :target => "_blank" do %>
+      <%= image_tag 'create_new_param.png', :width => '500px' %>
+  <% end %>
+</div>
+
+Note that we set the parameter's type to `path`, because we want to insert the parameter's value into the endpoint's URL. Parameter values can also be passed as URL query parameters, headers, cookies, etc.
+
+## Test your endpoint
+
+Now we're ready to try our new endpoint! On the endpoint's detail page, click the 'Try it!' button. 
+
+Fill in a value for the `fooValue` parameter and click the 'Send' button.
+
+If all went well, you should see a JSON response that looks something like this:
+
+```
+{
+    "responseMeta": {
+        "id": "tryIt-1409293933838",
+        "processTime": 235
+    },
+    "responses": [
+        {
+            "partId": "echo",
+            "id": "echo",
+            "cookies": [],
+            "statusCode": 200,
+            "mimeType": "application/json",
+            "charset": "ISO-8859-1",
+            "cacheControl": {
+                "noCache": false
+            },
+            "contents": "{\"foo\": \"bar\"}\n",
+            "errors": [],
+            "retrievedFromCache": false
+        }
+    ]
+}
+```
+
+Congratulations, you've successfully created and tested your first endpoint!
