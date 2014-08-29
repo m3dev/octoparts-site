@@ -5,6 +5,12 @@ nav_order: 100
 
 ## Octoparts Contributor Guidelines
 
+### Funny names
+
+If you look around our codebase, you may find places where we use the word "part" to refer to what we call a "backend endpoint" in most of our documentation. This is bad naming, but one with historical reasons: when we started building Octoparts, it was with the intention of grabbing "parts" of a page from other services, thus an endpoint corresponded roughly with a "part".
+
+We *do* plan on renaming our models and references but until then, stay alert!
+
 ### Reporting Issues
 
 If you wish to report an issue for Octoparts, please ensure you have done the following things:
