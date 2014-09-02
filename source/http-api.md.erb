@@ -72,5 +72,38 @@ For information on what this means in detail, see <%= link_to "Caching page", "/
     <p>TODO</p>
 
 
+## API clients
 
+While you're free to use the HTTP API directly, we also provide a couple of API clients.
 
+### Java client
+
+This client is actually implemented mostly in Scala, but it provides seamless Java interop. It's based on the [Ning AsyncHttpClient](https://github.com/AsyncHttpClient/async-http-client).
+
+Maven:
+
+```
+<dependency>
+  <groupId>com.m3</groupId>
+  <artifactId>octoparts-java-client_2.11</artifactId>
+  <version><%= data.versions.latest %></version>
+</dependency>
+```
+
+<% note do %>
+    We cross-build the Java client against both Scala 2.10 and 2.11, in case you already have a <code>scala-library.jar</code> on your classpath. Change the artifactId to <code>octoparts-java-client_2.10</code> if you prefer.
+<% end %>
+
+### Scala WS client
+
+This is a Scala client, designed primarily to be used within a Play application, although it should work fine even if you're not using Play. It uses the Play WS library for its HTTP calls. 
+
+SBT:
+
+```
+libraryDependencies ++= Seq(
+  "com.m3" %% "octoparts-scala-ws-client" % "<%= data.versions.latest %>"
+)
+```
+
+Just like the Java client, we cross-publish for Scala 2.10 and 2.11.
