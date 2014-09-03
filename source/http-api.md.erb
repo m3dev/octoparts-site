@@ -17,20 +17,6 @@ The API consists of endpoints for the following:
 
 The discovery endpoint is used for programmatically discovering the backend endpoints that have been registered in a given Octoparts deployment. The response is a list of registered endpoints, with each item showing what URL will be hit with, what parameters are registered to it, what HTTP method will be used when it is invoked, as well as cache-related settings.
 
-### Code samples
-
-#### Scala client examples
-
-```scala
-val someScala = "TODO"
-def foo(a: Int): String = a.toString
-```
-
-#### Java client examples
-```java
-String someJava = "java";
-```
-
 ### Invocation
 
 This is likely going to be your most-often used Octoparts endpoint. It is the endpoint that you will do a POST to in order to invoke your registered endpoints.
@@ -47,30 +33,112 @@ Ways to use an `AggregateResponse` include:
 
 * Ignoring it (maybe you don't care about the response)
 * Map/filter over the list of `PartResponse`s to get information
-  * _Note:_ each `PartResponse` has an id field, which will match the id provided in its corresponding PartRequest if one was provided but will default to the endpoint id if the id field was not provided. In case you want to invoke the same registered endpoint multiple times in a single Octoparts call
+  * _Note:_ each `PartResponse` has an `id` field, which will match the ID provided in its corresponding `PartRequest` if one was provided, but will default to the endpoint ID otherwise. If you want to invoke the same registered endpoint multiple times in a single Octoparts call, you can give the `PartRequests` different IDs to differentiate them.
 
 ### Code samples
 
-#### Scala client examples
-    <p>TODO</p>
+#### Scala client example
 
-#### Java client examples
-    <p>TODO</p>
+```scala
+// Build an AggregateRequest to send to Octoparts
+val aggregateRequest = AggregateRequest(
+  requestMeta = RequestMeta(
+    // Most of these fields are optional
+    id = UUID.randomUUID().toString,
+    serviceId = Some("frontend"),
+    userId = Some("123"),
+    requestUrl = Some("http://www.m3.com/foo"),
+    timeoutMs = Some(500L)
+  ),
+  requests = Seq(
+    // A list of the endpoints you want to call, with parameters to send
+    PartRequest(partId = "UserProfile", params = Set(PartRequestParam("uid", "123"))),
+    PartRequest(partId = "LatestNews", params = Set(PartRequestParam("limit", "10")))
+  )
+)
 
-### Cache invalidation
+// Send the request, get back a Future
+val fResp: Future[AggregateResponse] = octoClient.invoke(aggregateRequest)
+```
+
+#### Java client example
+```java
+// Build an AggregateRequest to Send to Octoparts.
+// Arguments (all optional and therefore nullable): 
+// user ID, session ID, user agent, requested URL, timeout (ms)
+RequestBuilder request = apiBuilder.newRequest(
+    "123", "mySessionId", "myUserAgent", "http://www.m3.com/foo", 500L);
+request.newPart("UserProfile", null).addParam("uid", "123").build();
+request.newPart("LatestNews", null).addParam("limit", "10").addParam("foo", "bar").build();
+
+// Send the request, get back a Future
+Future<ResponseWrapper> future = apiBuilder.submit(request.build());
+
+// For convenience, block on the future if you want to
+ResponseWrapper responseWrapper = FutureResponseHandler.awaitResponse(future, 1000L);
+
+// Note: The Java client doesn't include any helpers for JSON deserialization
+String userProfileJson = responseWrapper.getPartResponse("UserProfile").getContents("");
+String latestNewsJson = responseWrapper.getPartResponse("part2").getContents("[]");
+```
 
 The cache invalidation endpoints allow you to invalidate the cached responses stored in Octoparts.  They allow you to invalidate caches by backend endpoint name, endpoint name with parameter name-value pair, cache group name, and cache group name with parameter value.
 
-For information on what this means in detail, see <%= link_to "Caching page", "/caching.html" %>
+For information on what this means in detail, see the <%= link_to "Caching page", "/caching.html" %>.
 
 ### Code samples
 
 #### Scala client examples
-    <p>TODO</p>
+
+```scala
+// Flush user 123's profile data from the cache.
+// Returns true if everything went OK.
+val fResult: Future[Boolean] = octoClient.invalidateCacheFor("UserProfile", "uid", "123")
+```
 
 #### Java client examples
-    <p>TODO</p>
+```java
+// Flush user 123's profile data from the cache.
+// Returns true if everything went OK.
+Future<Boolean> result = apiBuilder.invalidateCacheFor("UserProfile", "uid", "123");
+```
 
+## API clients
 
+While you're free to use the HTTP API directly, we also provide a couple of API clients.
 
+### Java client
 
+This client is actually implemented mostly in Scala, but it provides seamless Java interop. It's based on the [Ning AsyncHttpClient](https://github.com/AsyncHttpClient/async-http-client).
+
+See [here](https://github.com/m3dev/octoparts/blob/master/java-client/src/test/com/m3/octoparts/Sample.java) for an example of how to use it in your application.
+
+Maven:
+
+```
+<dependency>
+  <groupId>com.m3</groupId>
+  <artifactId>octoparts-java-client_2.11</artifactId>
+  <version><%= data.versions.latest %></version>
+</dependency>
+```
+
+<% note do %>
+    We cross-build the Java client against both Scala 2.10 and 2.11, in case you already have a <code>scala-library.jar</code> on your classpath. Change the artifactId to <code>octoparts-java-client_2.10</code> if you prefer.
+<% end %>
+
+### Scala WS client
+
+This is a Scala client, designed to be used within a Play application. It uses the Play WS library for its HTTP calls. 
+
+See [here](https://github.com/m3dev/octoparts/blob/master/scala-ws-client/src/test/com/m3/octoparts/ws/Sample.scala) for an example of how to use it in your application.
+
+SBT:
+
+```
+libraryDependencies ++= Seq(
+  "com.m3" %% "octoparts-scala-ws-client" % "<%= data.versions.latest %>"
+)
+```
+
+Just like the Java client, we cross-publish for Scala 2.10 and 2.11.
