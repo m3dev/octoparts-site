@@ -1,26 +1,8 @@
-// Syntax highlighting
+/* Syntax highlighting */
 <%= Rouge::Themes::Github.render(:scope => '.highlight') %>
 
 body {
   font-size: 16px;
-}
-
-.screenshot {
-  padding: 10px;
-}
-
-.screenshot img {
-  border: thin solid gray;
-}
-
-.site-footer {
-  margin-top: 50px;
-  padding-top: 20px;
-  padding-bottom: 20px;
-  font-size: 13px;
-  color: #777;
-  border-top: 1px solid #e5e5e5;
-  text-align: center;
 }
 
 /* Override link color */
@@ -37,4 +19,38 @@ a:focus {
 .nav-pills > li.active > a:hover,
 .nav-pills > li.active > a:focus {
   background-color: #7e4bad;
+}
+
+/* Logo */
+.sidebar-logo {
+  padding: 25px 0 18px 15px;
+}
+
+.big-logo {
+  text-align: center;
+  padding: 0 20px 30px 0;
+}
+
+/* Screenshot */
+.screenshot {
+  padding: 10px 0;
+}
+
+.screenshot img {
+  border: thin solid gray;
+}
+
+/* Footer */
+.site-footer {
+  margin-top: 50px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  font-size: 13px;
+  color: #777;
+  border-top: 1px solid #e5e5e5;
+  text-align: center;
+}
+
+.site-footer-link-list {
+  margin-left: 0;
 }
