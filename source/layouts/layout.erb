@@ -28,10 +28,12 @@
       <div class="row">
 
         <div class="col-md-3">
-          <div id="sidebar" style="padding-top: 20px;">
-            <% link_to '/index.html' do %>
-                <%= image_tag 'octo_logo1.png', :width => '220px', :style => 'padding-left: 15px;' %>
-            <% end %>
+          <div id="sidebar">
+            <div class="sidebar-logo">
+              <% link_to '/index.html' do %>
+                  <%= image_tag 'octo_logo1.png', :width => '220px' %>
+              <% end %>
+            </div>
 
             <ul class="nav nav-pills nav-stacked">
             <% sitemap.where(:nav_order.gte => 0).order_by(:nav_order).all.each { |page| %>
@@ -58,7 +60,7 @@
         </div>
         <div class="row">
           <div class="col-md-12">
-            <ul class="list-inline">
+            <ul class="list-inline site-footer-link-list">
                 <li>
                   <%= link_to "M3Dev", "http://m3dev.github.io/"  %>
                 </li>
