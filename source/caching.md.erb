@@ -59,7 +59,7 @@ If the client sets this header when performing an aggregate request, Octoparts w
 
 #### Backend APIs
 
-* `Cache-Control: no-cache`
+* `Cache-Control: no-store`
 
 If this header is set on an API response, Octoparts will guarantee not to insert the response into the cache. Note, however, that if the response already happens to be present in the cache, Octoparts will not remove it.
 
