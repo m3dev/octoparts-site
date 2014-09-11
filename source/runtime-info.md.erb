@@ -1,0 +1,139 @@
+---
+title: Runtime info
+nav_order: 80
+---
+
+Octoparts provides several endpoints that give you useful run-time insights.
+
+### Health check
+
+`GET ${basePath}/system/healthcheck`
+
+Example response:
+
+```json
+{
+    "colour": "GREEN",
+    "statuses": {
+        "db": {
+            "ok": true,
+            "message": "DB looks fine"
+        },
+        "hystrix": {
+            "ok": true,
+            "openCircuits": []
+        }
+    }
+}
+```
+The main purpose of this endpoint is to provide an easy way for Octoparts to be monitored by other tools.
+
+In the JSON response, the `colour` field will either be `GREEN` or `YELLOW`, and the `statuses` field contains a JSON object with database and Hystrix health information. If there is something not quite right with either the database (e.g. database can't be reached) or Hystrix (there is an open circuit), the `colour` attribute will be `YELLOW`, otherwise it will be `GREEN`.
+
+### Metrics
+
+`GET ${basePath}/system/metrics`
+
+Example response:
+
+```json
+
+{
+  "version" : "3.0.0",
+  "gauges" : {
+    "PS-MarkSweep.count" : {
+      "value" : 3
+    },
+    "PS-MarkSweep.time" : {
+      "value" : 281
+    },
+    "PS-Scavenge.count" : {
+      "value" : 109
+    },
+    "PS-Scavenge.time" : {
+      "value" : 996
+    },
+    "blocked.count" : {
+      "value" : 0
+    },
+    ..
+  "meters" : {
+    "com.kenshoo.play.metrics.MetricsFilter.200" : {
+      "count" : 555,
+      "m15_rate" : 0.001991333965898442,
+      "m1_rate" : 0.0025771066425380267,
+      "m5_rate" : 0.002672119320980551,
+      "mean_rate" : 0.003249095840244962,
+      "units" : "events/second"
+    },
+ ...
+  "timers" : {
+    "com.kenshoo.play.metrics.MetricsFilter.requestTimer" : {
+      "count" : 716,
+      "max" : 1.0150450180000001,
+      "mean" : 0.14267013129411768,
+      ...
+      "duration_units" : "seconds",
+      "rate_units" : "calls/second"
+    }
+  }
+}
+```
+
+The JSON response of this endpoint provides useful JVM information as well as Play-specific HTTP request instrumentation metrics.
+
+The hard work is being done by the [Kenshoo metrics-play library](https://github.com/kenshoo/metrics-play), which in turn is using the [Dropwizard Metrics library](https://dropwizard.github.io/metrics/3.1.0/).
+
+### Configuration
+
+`GET ${basePath}/system/config`
+
+Example response:
+
+```json
+{
+    "akka": {
+        "actor": {
+            "creation-timeout": "20s",
+            "debug": {
+                "autoreceive": "off",
+                "event-stream": "off",
+                "fsm": "off",
+                "lifecycle": "off",
+          ...
+    },
+    "caching" : {
+        "disabled" : false,
+        "inmemory" : false,
+        "pool" : {
+            "size" : 10
+        },
+        "queue" : {
+            "size" : 256
+        }
+    }
+    ...
+}
+```
+
+The JSON response from this endpoint is the fully-resolved Typesafe config that is currently being used by the running application. No more sleuthing required to check for proper configuration !
+
+### Build info
+
+`GET ${basePath}/system/build`
+
+Example response:
+
+```json
+{
+    "version": "2.1-SNAPSHOT",
+    "scala_version": "2.11.2",
+    "build_time_millis": 1410158241558,
+    "build_time_pretty": "2014-09-08 15:37:21",
+    "git_branch": "develop",
+    "git_tags": [],
+    "git_head": "2e8c6f00ea8ac7d5de5e131c13ff07a5c4cf18e8"
+}
+```
+
+As the path implies, this endpoint provides build-time information, in JSON form.
