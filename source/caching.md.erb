@@ -67,13 +67,131 @@ If this header is set on an API response, Octoparts will guarantee not to insert
 
 If `max-age` is set, Octoparts will cache the response with the given TTL (in seconds). However, if a TTL is also set in the admin screen for that endpoint, the shorter of the two TTLs will be used.
 
+Note that if the response can be revalidated (i.e. it has an `ETag` or `Last-Modified` header), then the `max-age` value will NOT be used to decide the cache TTL. The TTL value configured in the admin UI (which may be eternal) will be used unconditionally.
+
 * `ETag`, `Last-Modified`
 
-If one or more of these headers are set, Octoparts will store their values together with the response itself in the cache. It will cache the response indefinitely, even if it is supposed to have a TTL.
+If one or more of these headers are set, Octoparts will store their values together with the response itself in the cache.
 
-The next time Octoparts looks up the response in the cache, <strong>only</strong> if the cached response has exceeded its TTL, it will contact the backend API again in order to validate that the cached response is not stale. It will send `If-None-Match` and/or `If-Modified-Since` headers. 
+The next time Octoparts looks up the response in the cache, it will contact the backend API again in order to validate that the cached response is not stale. It will send `If-None-Match` and/or `If-Modified-Since` headers. If the backend responds with `304 Not Modified`, Octoparts will return the cached response to the client. Otherwise it will cache the new response and return it to the client.
 
-If the backend responds with a `304 Not Modified`, Octoparts will return the cached response to the client. Otherwise it will cache the new response and return it to the client.
+Note that if the the response also included a `max-age` directive, revalidation will not occur until after this period has elapsed. For example, if the backend response had both an `ETag` and a `max-age` of 60 seconds, Octoparts will treat the response as fresh for 60 seconds. During the first 60 seconds it will not bother to revalidate the response, but after 60 seconds have elapsed it will start revalidating using the `ETag` value.
+
+#### Revalidation and TTL reset
+
+If Octoparts revalidates a cached response using `If-None-Match` and/or `If-Modified-Since` headers and the backend responds with a `304 Not Modified`, Octoparts will return the cached response to the client and then re-insert that cached response into the cache, thereby extending its TTL.
+
+Note that this means a value can stay in the cache indefinitely, as long as it gets requested and revalidated often enough.
+
+For example, say you have registered an endpoint and set the TTL to 60 seconds. At a given point in time you make a request, and the response comes back with an `ETag`. This response is inserted into the cache.
+
+30 seconds later you request the same endpoint with the same parameters. The response is retrieved from the cache, and revalidated using the `ETag` value. The backend responds with a `304 Not Modified`, so the response is returned to the client. Its cache TTL is then reset to 60 seconds, so it will not expire until 90 seconds after the original request.
+
+<div class="screenshot">
+  <% link_to '/img/cache_ttl_reset.png', :target => "_blank" do %>
+    <%= image_tag "cache_ttl_reset.png", :width => '500px' %>
+  <% end %>
+</div>
+
+#### Summary
+
+The interaction between the configured TTL and various cache control headers can get pretty confusing, so here's a summary of how Octoparts behaves in various situations.
+
+Key:
+
+* Configured TTL = the endpoint's cache TTL value configured using the admin UI
+* `max-age` = the value of the `Cache-Control: max-age` header set on the backend response
+* `ETag`/`Last-Modified` = whether one of these headers is present in the backend response
+* Memcached TTL = the actual TTL value used when inserting the response into Memcached
+* Revalidates = whether (and when) Octoparts revalidates a cached response against the backend
+
+<table class="table table-striped table-bordered table-hover">
+  <thead>
+      <tr>
+        <th>Configured TTL</th>
+        <th><code>max-age</code></th>
+        <th><code>ETag</code>/<code>Last-Modified</code></th>
+        <th>Memcached TTL</th>
+        <th>Revalidates</th>
+        <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>-</ta>
+      <td>-</td>
+      <td>Will not cache</td>
+      <td>n/a</td>
+      <td>Setting the cache TTL to 0 disables caching completely</td>
+    </tr>
+    <tr>
+      <td>None</td>
+      <td>None</ta>
+      <td>Not present</td>
+      <td>30 days</td>
+      <td>No</td>
+      <td>30 days = infinity, because we never learned to count higher than 30</td>
+    </tr>
+    <tr>
+      <td>a</td>
+      <td>None</ta>
+      <td>Not present</td>
+      <td>a</td>
+      <td>No</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>None</td>
+      <td>b</ta>
+      <td>Not present</td>
+      <td>b</td>
+      <td>No</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>a</td>
+      <td>b</ta>
+      <td>Not present</td>
+      <td>min(a, b)</td>
+      <td>No</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>None</td>
+      <td>None</ta>
+      <td>Present</td>
+      <td>None</td>
+      <td>Always</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>a</td>
+      <td>None</ta>
+      <td>Present</td>
+      <td>a</td>
+      <td>Always</td>
+      <td>TTL can be reset. See discussion above.</td>
+    </tr>
+    <tr>
+      <td>None</td>
+      <td>b</ta>
+      <td>Present</td>
+      <td>None</td>
+      <td>After b</td>
+      <td></td>
+    </tr>
+    <tr>
+      <td>a</td>
+      <td>b</ta>
+      <td>Present</td>
+      <td>a</td>
+      <td>After b</td>
+      <td>TTL can be reset. See discussion above.</td>
+    </tr>
+  </tbody>
+</table>
+
 
 
 ### Internals
