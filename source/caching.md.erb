@@ -83,7 +83,7 @@ If Octoparts revalidates a cached response using `If-None-Match` and/or `If-Modi
 
 Note that this means a value can stay in the cache indefinitely, as long as it gets requested and revalidated often enough.
 
-For example, say you have registered an endpoint and set the TTL to 60 seconds. At a given point in time you make a request, and the response comes back with an `ETag`. This response is inserted into the cache.
+For example, say you have registered an endpoint and set the TTL to 60 seconds in the admin screen. At a given point in time you make a request, and the response comes back with an `ETag`. This response is inserted into the cache.
 
 30 seconds later you request the same endpoint with the same parameters. The response is retrieved from the cache, and revalidated using the `ETag` value. The backend responds with a `304 Not Modified`, so the response is returned to the client. Its cache TTL is then reset to 60 seconds, so it will not expire until 90 seconds after the original request.
 
@@ -92,6 +92,8 @@ For example, say you have registered an endpoint and set the TTL to 60 seconds. 
     <%= image_tag "cache_ttl_reset.png", :width => '500px' %>
   <% end %>
 </div>
+
+However, the following exception should be noted: if the response has a `max-age` directive, then ETag revalidation will not begin until after the `max-age` has expired. In the above example, if there was also a `max-age` of more than 60 seconds then ETag revalidation would not occur, so the TTL would never be extended.
 
 #### Summary
 
