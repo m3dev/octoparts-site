@@ -67,7 +67,7 @@ If this header is set on an API response, Octoparts will guarantee not to insert
 
 If `max-age` is set, Octoparts will cache the response with the given TTL (in seconds). However, if a TTL is also set in the admin screen for that endpoint, the shorter of the two TTLs will be used.
 
-Note that if the response can be revalidated (i.e. it has an `ETag` or `Last-Modified` header), then the `max-age` value will NOT be used to decide the cache TTL. The TTL value configured in the admin UI (which may be eternal) will be used unconditionally.
+Note that if the response can be revalidated (i.e. it has an `ETag` or `Last-Modified` header), then the `max-age` value will NOT be used to decide the cache TTL. The TTL value set in the admin screen (which may be eternal) will be used unconditionally.
 
 * `ETag`, `Last-Modified`
 
