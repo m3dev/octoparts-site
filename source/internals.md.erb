@@ -13,8 +13,8 @@ Octoparts is composed of the following components:
 - [Hystrix dashboard](https://github.com/Netflix/Hystrix/tree/master/hystrix-dashboard) for Hystrix stream visualisation, deployed in Tomcat
   - If multiple Octoparts nodes are used, [Turbine](https://github.com/Netflix/Turbine/wiki/Getting-Started) is required for aggregating the Hystrix streams into a single stream to be consumed by the dashboard
 - [Kibana](http://www.elasticsearch.org/overview/kibana/) for visualising log entry data
-  - Log data from each Octoparts node is collected and aggregated via [fluentd](http://www.fluentd.org/) and stored in [ElasticSearch](http://www.elasticsearch.org/)
-- [Alert Mailer](../alert-mails.html) that queries the aforementioned ElasticSearch datastore to monitor errors rates and, if errors surpass configured thresholds, sends alert emails
+  - Log data from each Octoparts node is collected and aggregated via [fluentd](http://www.fluentd.org/) and stored in [Elasticsearch](http://www.elasticsearch.org/)
+- [Alert Mailer](../alert-mails.html) that queries the aforementioned Elasticsearch datastore to monitor errors rates and, if errors surpass configured thresholds, sends alert emails
 
 ### Process flow
 
