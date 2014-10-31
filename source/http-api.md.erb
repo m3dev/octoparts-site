@@ -33,7 +33,33 @@ Ways to use an `AggregateResponse` include:
 
 * Ignoring it (maybe you don't care about the response)
 * Map/filter over the list of `PartResponse`s to get information
-  * _Note:_ each `PartResponse` has an `id` field, which will match the ID provided in its corresponding `PartRequest` if one was provided, but will default to the endpoint ID otherwise. If you want to invoke the same registered endpoint multiple times in a single Octoparts call, you can give the `PartRequests` different IDs to differentiate them.
+
+#### A note about IDs
+
+For every `PartRequest`, you must supply the `partId`. This is the ID that is registered in the admin UI, e.g. `UserProfile`, and tells Octoparts which endpoint it should invoke.
+
+Also, you can optionally specify an `id` for the `PartRequest`. This is a unique ID for that _request_, as opposed to the ID of the _endpoint_ that it's calling, which is useful if you want to invoke the same endpoint multiple times in the same aggregate request.
+
+For example, say that you want to display a message sent from user 123 to user 456, so you want both users' profile information. In this case you would send two part requests that would look something like this (in Scala):
+
+```scala
+Seq(
+  PartRequest(partId = "UserProfile", 
+              id = Some("profile_123"), 
+              params = Seq(PartRequestParam("uid", "123"))),
+  PartRequest(partId = "UserProfile", 
+              id = Some("profile_456"), 
+              params = Seq(PartRequestParam("uid", "456")))
+)
+```
+
+If you don't specify an `id` for a `PartRequest`, it will automatically be set to be the same as the `partId`.
+
+When the `AggregateResponse` comes back and you want to extract a particular `PartResponse`, you can look it up using the `id` you specified on the `PartRequest`:
+
+```scala
+val user123profile = aggResp.findPart("profile_123")
+```
 
 ### Code samples
 
