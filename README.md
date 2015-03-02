@@ -4,7 +4,7 @@
 
 ```
 bundle install
-bundle exec 1middleman server
+bundle exec middleman server
 open localhost:4567
 ```
 
