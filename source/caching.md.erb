@@ -8,6 +8,12 @@ Octoparts caches the following information in [Memcached](http://memcached.org/)
 * Responses from API calls
 * The configuration data that is stored in the DB
 
+### Memcached configuration
+
+Octoparts uses Memcached in a non-blocking and highly parallel way, and does so using [Spymemcached](https://code.google.com/p/spymemcached/wiki/Optimizations), which [optimises multiaccesses for the same keys into a single multi-get](https://code.google.com/p/spymemcached/wiki/Optimizations#Multi-get_Escalation).
+
+Since Spymemcached [caps the number of multi-get items due to optimisation to 4096](https://github.com/couchbase/spymemcached/commit/b406daa1c6c4d5d7d2f49f0f8fc91cdc4a0c4d75), it might be a good idea to use this number as the `-R` parameter you pass to your Memcached daemon, which is [the option that sets the maximum amount of requests a server processes from a single connection without yielding](http://linux.die.net/man/1/memcached). To find the optimum `-R` would require extensive testing and benchmarking in your particular environment.
+
 ### Versioning
 
 In order to provide powerful support for cache invalidation, Octoparts maintains version information at the level of
@@ -41,7 +47,7 @@ For example, say we have three API endpoints that take `userId` parameters:
 
 Assume that each of these `userId` parameters has been registered with the `userActivityPoints` cache group.
 
-When user 123's activity point count changes, just make one request to 
+When user 123's activity point count changes, just make one request to
 
     /cache/invalidate/cacheGroup/userActivityPoints/params/123
 
