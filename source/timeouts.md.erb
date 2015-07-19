@@ -35,3 +35,5 @@ Those familiar with Scala may want to checkout our `RichFutureWithTimeout` enric
 ## Motivation for having 2 types of timeouts
 
 Asides from the two types serving 2 different functional requirements, the separation our timeouts allow us to do something cool: even if a request timeout has occured for a given `PartRequest`, so long as the corresponding `HystrixCommand` hasn't timed out, we can cache the eventual result of the `HystrixCommand` so that the next time the same `PartRequest` is processed by Octoparts, we have a chance of getting a cache hit, which allows us to respond immediately. For more details, see [Caching](../caching.html)
+
+**Next**: Read about <%= link_to "Logging & Visualization", "/logging-visualization.html" %>
