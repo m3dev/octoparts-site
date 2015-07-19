@@ -133,3 +133,5 @@ Spans logged to Zipkin will include:
 - HTTP request wait times
 
 Octoparts will also play nice with the rest of your Zipkin-enabled infrastructure, meaning it will properly respect Zipkin ids sent to it in HTTP headers (it will set the parent-id of it's Server Spans to be the client span id sent to it and maintain the same trace-id) and it will forward Zipkin headers to any HTTP endpoints it calls. This ensures that you can have 1 big trace from beginning to end, allowing you to pinpoint/track bottlenecks in your distributed systems.
+
+**Next**: Read about <%= link_to "Octoparts' Internals", "/internals.html" %>

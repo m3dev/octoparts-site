@@ -37,3 +37,5 @@ When a POST request is sent to the [endpoints invocation API](http://localhost:9
 3. All the `PartResponse`s are gathered into a single `AggregateResponse` object. *Note:* `PartRequest`s that take longer than the default or requested timeout duration to process are mapped to a `PartResponse` with a timeout error (for more details, see [Timeouts](../timeouts.html))
 4. The `AggregateResponse` is serialised into a JSON object
 5. The JSON object is sent as a string in the body of the HTTP response
+
+**Next**: Read about <%= link_to "Runtime Info", "/runtime-info.html" %>
