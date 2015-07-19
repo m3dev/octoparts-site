@@ -177,3 +177,12 @@ If all went well, you should see a JSON response that looks something like this:
 ```
 
 Congratulations, you've successfully created and tested your first endpoint!
+
+## What's next?
+
+If you used Vagrant to install, you can instantly check out various services related to the endpoint you just made.
+
+* Kibana - <%= link_to "Sample Dashboard", "http://localhost:5080/kibana-3.0.1/index.html#/dashboard/file/guided.json", :target => "_blank" %>
+* Hystrix - <%= link_to "Sample Dashboard", "http://localhost:8080/dashboard/monitor/monitor.html?stream=http%3A%2F%2Flocalhost%3A9000%2Fhystrix.stream", :target => "_blank" %>
+
+Next: Read about <%= link_to "Octoparts' HTTP API", "/http-api.html" %>
