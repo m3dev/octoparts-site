@@ -13,7 +13,7 @@ to Octoparts include:
 - Combination of previously separate thread pools into the Play default thread pool
 - Migration of components out of the Global singleton for easier mocking and better reasonability
 
-After performing the upgrade, we deployed it into our test and QA environments and carefully monitored it for problems. When we found none, we used Siege to stress test the latest Play 2.3.x-based version of Octoparts against the Play 2.4.x-based version.  The following results were obtained from Sieging using a payload equivalent to one that would request data for the M3.com homepage for signed-in users, with 100 concurrent requests, and zero delay on a 2Ghz Corei7 (Haswell) Macbook Pro with 8GB RAM:
+After performing the upgrade, we deployed it into our test and QA environments and carefully monitored it for problems. When we found none, we used Siege to stress test the latest Play 2.3.x-based version of Octoparts against the Play 2.4.x-based version.  The following results were obtained from 10 mins of Sieging using a payload equivalent to one that would request data for the M3.com homepage for signed-in users, with 100 concurrent requests, and zero delay on a 2Ghz Corei7 (Haswell) Macbook Pro with 8GB RAM:
 
 <table class="table table-hover">
   <thead>
@@ -97,4 +97,4 @@ After performing the upgrade, we deployed it into our test and QA environments a
 
 #### Discussion
 
-Overall, there is a slight improvement in overall response time, and under stress  (if anything, performance under stress improved because there is a lower tendency to hit 100% CPU usage peaks), with Siege reporting less failures (99.93% availability with Play 2.3 version versus 100% availability with Play 2.4). Thanks to Play 2.4's thread pool optimisation, we are using ~200 less threads at peak than with 2.3.x.
+Overall, there is a slight improvement in response time, and in resource usage under stress (if anything, performance under stress improved because there is a lower tendency to hit 100% CPU usage peaks), with Siege reporting less failures (99.93% availability with Play 2.3 version versus 100% availability with Play 2.4). Thanks to Play 2.4's thread pool optimisation, we are using ~200 less threads at peak than with 2.3.x.
