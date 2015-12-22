@@ -1,6 +1,6 @@
 ---
 title: Contributing
-nav_order: 100
+nav_order: 110
 ---
 
 ## Octoparts Contributor Guidelines
