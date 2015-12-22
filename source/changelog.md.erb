@@ -97,4 +97,4 @@ After performing the upgrade, we deployed it into our test and QA environments a
 
 #### Discussion
 
-Overall, there is a slight improvement in response time, and in resource usage under stress (if anything, performance under stress improved because there is a lower tendency to hit 100% CPU usage peaks), with Siege reporting less failures (99.93% availability with Play 2.3 version versus 100% availability with Play 2.4). Thanks to Play 2.4's thread pool optimisation, we are using ~200 less threads at peak than with 2.3.x.
+Overall, there is a slight improvement in response time, and in resource usage under stress (if anything, performance under stress improved because there is a lower tendency to hit 100% CPU usage peaks), with Siege reporting fewer failures (99.93% availability with Play 2.3 version versus 100% availability with Play 2.4). Thanks to Play 2.4's thread pool optimisation, we are using ~200 less threads at peak than with 2.3.x.
