@@ -1,0 +1,100 @@
+---
+title: Changelog
+nav_order: 100
+---
+
+### v2.6
+
+We are proud to announce that we have successfully upgraded to Play 2.4.x, "Damiya". Although the last few Play releases were generally straightforward to upgrade to,
+with 2.4, the Play team made a lot of big changes to the framework, resulting in a lot of fixes and performance improvements. Some of the changes that are more relevant
+to Octoparts include:
+
+- Dependency injection out of the box. (Octoparts continues to make use of compile-time DI for correctness and performance)
+- Combination of previously separate thread pools into the Play default thread pool
+- Migration of components out of the Global singleton for easier mocking and better reasonability
+
+After performing the upgrade, we deployed it into our test and QA environments and carefully monitored it for problems. When we found none, we used Siege to stress test the latest Play 2.3.x-based version of Octoparts against the Play 2.4.x-based version.  The following results were obtained from 10 mins of Sieging using a payload equivalent to one that would request data for the M3.com homepage for signed-in users, with 100 concurrent requests, and zero delay on a 2Ghz Corei7 (Haswell) Macbook Pro with 8GB RAM:
+
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Play 2.3.x based</th>
+      <th>Play 2.4.x based</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr> <th scope=row>JVisualVM</th>
+      <td>
+        <div class="screenshot screenshot-border">
+
+          <% link_to '/img/opqa1_play23.png', :target => "_blank" do %>
+              <%= image_tag 'opqa1_play23.png', :class => 'img-constrained'%>
+          <% end %>
+
+        </div>
+      </td>
+      <td>
+        <div class="screenshot screenshot-border">
+
+          <% link_to '/img/opqa1_play24.png', :target => "_blank" do %>
+              <%= image_tag 'opqa1_play24.png', :class => 'img-constrained'%>
+          <% end %>
+
+        </div>
+      </td>
+    </tr>
+    <tr> <th scope=row>Transactions</th>
+      <td>24317 hits</td>
+      <td>25024 hits</td>
+    </tr>
+    <tr><th scope=row>Availability</th>
+      <td>99.93 %</td>
+      <td>100.00 %</td>
+    </tr>
+    <tr><th scope=row>Elapsed time</th>
+      <td>599.44 secs</td>
+      <td>598.99 secs</td>
+    </tr>
+    <tr><th scope=row>Data transferred</th>
+      <td>145.70 MB</td>
+      <td>149.84 MB</td>
+    </tr>
+    <tr><th scope=row>Response time</th>
+      <td>1.96 secs</td>
+      <td>1.89 secs</td>
+    </tr>
+    <tr><th scope=row>Transaction rate</th>
+      <td>40.57 trans/sec</td>
+      <td>41.78 trans/sec</td>
+    </tr>
+    <tr><th scope=row>Throughput</th>
+      <td>0.24 MB/sec</td>
+      <td>0.25 MB/sec</td>
+    </tr>
+    <tr><th scope=row>Concurrency</th>
+      <td>79.49</td>
+      <td>79.04</td>
+    </tr>
+    <tr><th scope=row>Successful transactions</th>
+      <td>24317</td>
+      <td>25024</td>
+    </tr>
+    <tr><th scope=row>Failed transactions</th>
+      <td>16</td>
+      <td>0</td>
+    </tr>
+    <tr><th scope=row>Longest transaction</th>
+      <td>12.03 secs</td>
+      <td>3.19 secs</td>
+    </tr>
+    <tr><th scope=row>Shortest transaction</th>
+      <td>0.06 secs</td>
+      <td>0.06 secs</td>
+    </tr>
+  </tbody>
+</table>
+
+#### Discussion
+
+Overall, there is a slight improvement in response time, and in resource usage under stress (if anything, performance under stress improved because there is a lower tendency to hit 100% CPU usage peaks), with Siege reporting fewer failures (99.93% availability with Play 2.3 version versus 100% availability with Play 2.4). Thanks to Play 2.4's thread pool optimisation, we are using ~200 less threads at peak than with 2.3.x.
